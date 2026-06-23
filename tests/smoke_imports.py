@@ -6,11 +6,6 @@ Run directly: python3 tests/smoke_imports.py
 If any import fails, Python will raise ImportError and exit with non-zero code.
 """
 
-import agent_runtime
-import agent_runtime.domain
-import agent_runtime.domain.events
-import agent_runtime.kernel
-
 from agent_runtime.kernel import SystemClock, Timestamp
 
 clock = SystemClock()

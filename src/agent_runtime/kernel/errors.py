@@ -18,4 +18,4 @@ class TimestampError(KernelError):
     """Raised when timestamp validation fails."""
 
 
-__all__ = ["KernelError", "InvalidIDError", "TimestampError"]
+__all__ = ["InvalidIDError", "KernelError", "TimestampError"]

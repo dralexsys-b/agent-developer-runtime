@@ -40,4 +40,4 @@ class FixedClock:
         return self._fixed_time
 
 
-__all__ = ["Clock", "SystemClock", "FixedClock"]
+__all__ = ["Clock", "FixedClock", "SystemClock"]

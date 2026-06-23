@@ -1,3 +1,5 @@
-"""Domain events."""
+"""Domain events - facts about things that happened in the domain."""
 
-__all__ = ()
+from .base import DomainEvent
+
+__all__ = ["DomainEvent"]
