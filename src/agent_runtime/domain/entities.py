@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from agent_runtime.domain.events import AgentRenamed, DomainEvent
 from agent_runtime.domain.value_objects.ids import AgentId
 from agent_runtime.kernel import Timestamp
 
@@ -15,6 +16,12 @@ class Agent:
     id: AgentId
     name: str
     created_at: Timestamp
+
+    _events: list[DomainEvent] = field(
+        default_factory=list,
+        init=False,
+        repr=False,
+    )
 
     def __post_init__(self) -> None:
         """Validate entity fields."""
@@ -32,4 +39,24 @@ class Agent:
         """
         if new_name == "":
             raise ValueError("Agent name cannot be empty")
+
+        old_name = self.name
         self.name = new_name
+
+        self._record_event(
+            AgentRenamed(
+                agent_id=self.id,
+                old_name=old_name,
+                new_name=new_name,
+            )
+        )
+
+    def _record_event(self, event: DomainEvent) -> None:
+        """Record a domain event for later retrieval."""
+        self._events.append(event)
+
+    def pull_events(self) -> list[DomainEvent]:
+        """Extract and return all pending domain events."""
+        events = self._events.copy()
+        self._events.clear()
+        return events

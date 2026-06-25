@@ -58,3 +58,54 @@ def test_agent_rejects_empty_name_on_rename() -> None:
 
     with pytest.raises(ValueError):
         agent.rename("")
+
+
+def test_agent_has_empty_event_queue_initially() -> None:
+    """New agent has an empty event queue."""
+    agent = Agent(
+        id=AgentId(value=VALID_UUID),
+        name="Atlas",
+        created_at=Timestamp.now(),
+    )
+
+    assert agent.pull_events() == []
+
+
+def test_agent_rename_emits_agent_renamed_event() -> None:
+    """Agent.rename() emits AgentRenamed event with old and new names."""
+    from agent_runtime.domain.events import AgentRenamed
+
+    agent = Agent(
+        id=AgentId(value=VALID_UUID),
+        name="Atlas",
+        created_at=Timestamp.now(),
+    )
+
+    agent.rename("Nova")
+
+    events = agent.pull_events()
+
+    assert len(events) == 1
+    event = events[0]
+    assert isinstance(event, AgentRenamed)
+    assert event.agent_id == agent.id
+    assert event.old_name == "Atlas"
+    assert event.new_name == "Nova"
+    assert event.event_type == "AgentRenamed"
+
+
+def test_pull_events_clears_event_queue() -> None:
+    """pull_events() returns events once and clears the queue."""
+    agent = Agent(
+        id=AgentId(value=VALID_UUID),
+        name="Atlas",
+        created_at=Timestamp.now(),
+    )
+
+    agent.rename("Nova")
+
+    first = agent.pull_events()
+    second = agent.pull_events()
+
+    assert len(first) == 1
+    assert second == []
