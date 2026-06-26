@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agent_runtime.domain.aggregate_root import AggregateRoot
-from agent_runtime.domain.events import AgentRenamed
+from agent_runtime.domain.events import AgentRenamed, TaskTitleChanged
 from agent_runtime.domain.value_objects.ids import AgentId, TaskId
 from agent_runtime.kernel import Timestamp
 
@@ -58,3 +58,27 @@ class Task(AggregateRoot):
         """Validate entity fields."""
         if self.title == "":
             raise ValueError("Task title cannot be empty")
+
+
+    def change_title(self, title: str) -> None:
+        """Change the task title.
+
+        Args:
+            title: New title for the task.
+
+        Raises:
+            ValueError: If title is empty.
+        """
+        if title == "":
+            raise ValueError("Task title cannot be empty")
+
+        old_title = self.title
+        self.title = title
+
+        self._record_event(
+            TaskTitleChanged(
+                task_id=self.id,
+                old_title=old_title,
+                new_title=title,
+            )
+        )

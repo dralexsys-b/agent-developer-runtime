@@ -3,6 +3,7 @@
 import pytest
 
 from agent_runtime.domain.entities import Task
+from agent_runtime.domain.events import TaskTitleChanged
 from agent_runtime.domain.value_objects.ids import TaskId
 from agent_runtime.kernel import Timestamp
 
@@ -44,3 +45,51 @@ def test_task_has_empty_event_queue_initially() -> None:
     )
 
     assert task.pull_events() == []
+
+
+def test_task_can_change_title() -> None:
+    """Task can change its title."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Old Title",
+        created_at=Timestamp.now(),
+    )
+
+    task.change_title("New Title")
+
+    assert task.title == "New Title"
+
+
+def test_task_rejects_empty_title_on_change() -> None:
+    """Task rejects empty title on change."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Old Title",
+        created_at=Timestamp.now(),
+    )
+
+    with pytest.raises(ValueError):
+        task.change_title("")
+
+
+def test_task_change_title_emits_task_title_changed_event() -> None:
+    """Task.change_title() emits TaskTitleChanged event with old and new titles."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Old Title",
+        created_at=Timestamp.now(),
+    )
+
+    task.change_title("New Title")
+
+    events = task.pull_events()
+
+    assert len(events) == 1
+
+    event = events[0]
+
+    assert isinstance(event, TaskTitleChanged)
+    assert event.task_id == task.id
+    assert event.old_title == "Old Title"
+    assert event.new_title == "New Title"
+    assert event.event_type == "TaskTitleChanged"
