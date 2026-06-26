@@ -3,8 +3,9 @@
 import pytest
 
 from agent_runtime.domain.entities import Task
-from agent_runtime.domain.events import TaskTitleChanged
+from agent_runtime.domain.events import TaskStarted, TaskTitleChanged
 from agent_runtime.domain.value_objects.ids import TaskId
+from agent_runtime.domain.value_objects.status import TaskStatus
 from agent_runtime.kernel import Timestamp
 
 VALID_UUID = "550e8400-e29b-41d4-a716-446655440000"
@@ -93,3 +94,60 @@ def test_task_change_title_emits_task_title_changed_event() -> None:
     assert event.old_title == "Old Title"
     assert event.new_title == "New Title"
     assert event.event_type == "TaskTitleChanged"
+
+
+def test_task_can_start() -> None:
+    """Task can be started."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Implement feature",
+        created_at=Timestamp.now(),
+    )
+
+    task.start()
+
+
+def test_task_start_changes_status() -> None:
+    """Starting a task moves it to IN_PROGRESS."""
+
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Implement feature",
+        created_at=Timestamp.now(),
+    )
+
+    task.start()
+
+    assert task.status == TaskStatus.IN_PROGRESS
+
+
+def test_task_is_pending_after_creation() -> None:
+    """Newly created task has PENDING status."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Implement feature",
+        created_at=Timestamp.now(),
+    )
+
+    assert task.status == TaskStatus.PENDING
+
+
+def test_task_start_emits_task_started_event() -> None:
+    """Starting a task publishes TaskStarted event."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Implement feature",
+        created_at=Timestamp.now(),
+    )
+
+    task.start()
+
+    events = task.pull_events()
+
+    assert len(events) == 1
+
+    event = events[0]
+
+    assert isinstance(event, TaskStarted)
+    assert event.task_id == task.id
+    assert event.event_type == "TaskStarted"

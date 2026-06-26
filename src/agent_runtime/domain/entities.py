@@ -5,8 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agent_runtime.domain.aggregate_root import AggregateRoot
-from agent_runtime.domain.events import AgentRenamed, TaskTitleChanged
+from agent_runtime.domain.events import AgentRenamed, TaskStarted, TaskTitleChanged
 from agent_runtime.domain.value_objects.ids import AgentId, TaskId
+from agent_runtime.domain.value_objects.status import TaskStatus
 from agent_runtime.kernel import Timestamp
 
 
@@ -53,6 +54,7 @@ class Task(AggregateRoot):
     id: TaskId
     title: str
     created_at: Timestamp
+    status: TaskStatus = TaskStatus.PENDING
 
     def __post_init__(self) -> None:
         """Validate entity fields."""
@@ -80,5 +82,15 @@ class Task(AggregateRoot):
                 task_id=self.id,
                 old_title=old_title,
                 new_title=title,
+            )
+        )
+
+    def start(self) -> None:
+        """Start the task."""
+        self.status = TaskStatus.IN_PROGRESS
+
+        self._record_event(
+            TaskStarted(
+                task_id=self.id,
             )
         )

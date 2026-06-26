@@ -23,4 +23,18 @@ class TaskTitleChanged(DomainEvent):
     new_title: str
 
 
-__all__ = ["TaskTitleChanged"]
+@dataclass(frozen=True, slots=True, kw_only=True)
+class TaskStarted(DomainEvent):
+    """Emitted when a task transitions to IN_PROGRESS status.
+
+    Attributes:
+        task_id: The ID of the task that was started.
+    """
+
+    task_id: TaskId
+
+
+__all__ = [
+    "TaskStarted",
+    "TaskTitleChanged",
+]
