@@ -5,7 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agent_runtime.domain.aggregate_root import AggregateRoot
-from agent_runtime.domain.events import AgentRenamed, TaskStarted, TaskTitleChanged
+from agent_runtime.domain.events import (
+    AgentRenamed,
+    TaskCompleted,
+    TaskStarted,
+    TaskTitleChanged,
+)
 from agent_runtime.domain.value_objects.ids import AgentId, TaskId
 from agent_runtime.domain.value_objects.status import TaskStatus
 from agent_runtime.kernel import Timestamp
@@ -91,6 +96,19 @@ class Task(AggregateRoot):
 
         self._record_event(
             TaskStarted(
+                task_id=self.id,
+            )
+        )
+
+    def complete(self) -> None:
+        """Complete the task."""
+        if self.status != TaskStatus.IN_PROGRESS:
+            raise ValueError("Task must be in progress before completion")
+
+        self.status = TaskStatus.COMPLETED
+
+        self._record_event(
+            TaskCompleted(
                 task_id=self.id,
             )
         )

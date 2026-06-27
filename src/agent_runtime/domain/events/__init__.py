@@ -2,11 +2,12 @@
 
 from .agent import AgentRenamed
 from .base import DomainEvent
-from .task import TaskStarted, TaskTitleChanged
+from .task import TaskCompleted, TaskStarted, TaskTitleChanged
 
 __all__ = [
     "AgentRenamed",
     "DomainEvent",
+    "TaskCompleted",
     "TaskStarted",
     "TaskTitleChanged",
 ]

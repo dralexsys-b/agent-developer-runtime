@@ -151,3 +151,53 @@ def test_task_start_emits_task_started_event() -> None:
     assert isinstance(event, TaskStarted)
     assert event.task_id == task.id
     assert event.event_type == "TaskStarted"
+
+
+def test_task_complete_changes_status() -> None:
+    """Completing a started task moves it to COMPLETED."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Implement feature",
+        created_at=Timestamp.now(),
+    )
+
+    task.start()
+    task.complete()
+
+    assert task.status == TaskStatus.COMPLETED
+
+
+def test_task_cannot_complete_pending_task() -> None:
+    """Cannot complete a task that hasn't been started."""
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Implement feature",
+        created_at=Timestamp.now(),
+    )
+
+    with pytest.raises(ValueError):
+        task.complete()
+
+
+def test_task_complete_emits_task_completed_event() -> None:
+    """Completing a task publishes TaskCompleted event."""
+    from agent_runtime.domain.events import TaskCompleted
+
+    task = Task(
+        id=TaskId(value=VALID_UUID),
+        title="Implement feature",
+        created_at=Timestamp.now(),
+    )
+
+    task.start()
+    task.complete()
+
+    events = task.pull_events()
+
+    assert len(events) == 2
+
+    complete_event = events[1]
+
+    assert isinstance(complete_event, TaskCompleted)
+    assert complete_event.task_id == task.id
+    assert complete_event.event_type == "TaskCompleted"
