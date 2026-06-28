@@ -111,6 +111,7 @@ Fast publish (skip mypy):
 
     ./scripts/publish.sh -F /tmp/commit-msg.txt --fast
 
+Dry run performs verification but skips repository modifications (no git add, no commit, no push).
 Dry run (preview only):
 
     ./scripts/publish.sh -F /tmp/commit-msg.txt --dry-run
