@@ -1,17 +1,13 @@
-# agent-developer-runtime Documentation
+# Documentation
 
-This directory contains architecture and implementation documentation.
+Engineering documentation for the Agent Developer Runtime project.
 
 ## Documents
 
-Documents will be added incrementally during implementation:
+- **ARCHITECTURE.md** — System architecture, layers, and design principles
+- **ROADMAP.md** — Development roadmap and current planning status
+- **DEVELOPMENT.md** — Development process, TDD methodology, and engineering standards
 
-- `ARCHITECTURE.md` — Architecture overview
-- `ENGINEERING_RULES.md` — Engineering standards
-- `DECISIONS.md` — Architectural decisions log
-- `IMPLEMENTATION_LOG.md` — Implementation progress
+## Related Resources
 
-## Updates
-
-Documentation is added incrementally during implementation.
-See `IMPLEMENTATION_LOG.md` for current progress.
+Architectural Decision Records (ADR), evidence logs, and project knowledge base are maintained in the [agent-developer-memory](https://github.com/dralexsys-b/agent-developer-memory) repository.

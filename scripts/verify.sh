@@ -148,9 +148,9 @@ if [ "${VERIFY_SKIP_SMOKE:-0}" != "1" ]; then
                 else
                     printf 'FAIL\n'
                     printf '\nSmoke test output:\n'
-                    printf '----------------------------------------\n'
+                    printf '%s\n' '----------------------------------------'
                     cat "$tmp_log"
-                    printf '----------------------------------------\n'
+                    printf '%s\n' '----------------------------------------'
                     rm -f "$tmp_log"
                     smoke_tests_failed=1
                 fi
